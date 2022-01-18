@@ -40,8 +40,7 @@ function AppRouter() {
             <Route path="/">
               <Home />
             </Route>
-          </Switch>
-        }
+          </Switch>       
         <Footer />
       </Router>
     </div>

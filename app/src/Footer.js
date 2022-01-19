@@ -13,6 +13,8 @@ export function Footer() {
                 src="images/Globo-Logo-white-footer.svg"
                 alt=""
               />
+
+
               <img className="mobileImg" src="images/G.png" alt="" />
             </a>
           </div>

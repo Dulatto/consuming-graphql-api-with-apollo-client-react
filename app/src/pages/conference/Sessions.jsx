@@ -6,8 +6,8 @@ import {gql, useQuery} from "@apollo/client";
 
 /* ---> Define queries, mutations and fragments here */
 const SESSIONS = gql`
-query sessions {
-  sessions{ 
+query sessions($day: String!) {
+  sessions(day: $day){ 
    id
    title
    day
@@ -17,9 +17,11 @@ query sessions {
 }
 `;
 
-const SessionList =()=> {
+function SessionList ({day}) {
 
-  const{loading, data } = useQuery(SESSIONS);
+  const{loading, data } = useQuery(SESSIONS, {
+    variables:{day}
+  });
 
   if(loading) return <p>Loading Sessions...</p>
 

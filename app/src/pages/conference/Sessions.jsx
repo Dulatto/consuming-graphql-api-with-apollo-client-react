@@ -19,6 +19,8 @@ query sessions($day: String!) {
 
 function SessionList ({day}) {
 
+  if(day == "") day="Wednesday"
+
   const{loading, data } = useQuery(SESSIONS, {
     variables:{day}
   });

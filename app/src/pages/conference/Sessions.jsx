@@ -21,11 +21,13 @@ function SessionList ({day}) {
 
   if(day == "") day="Wednesday"
 
-  const{loading, data } = useQuery(SESSIONS, {
+  const{loading, error,  data } = useQuery(SESSIONS, {
     variables:{day}
   });
 
   if(loading) return <p>Loading Sessions...</p>
+
+  if(error) return <p>Error loading sessions!</p>
 
   return data.sessions.map((session)=>
       <SessionItem

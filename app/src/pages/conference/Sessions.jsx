@@ -13,6 +13,10 @@ query sessions($day: String!) {
    day
    room
    level
+   speakers{
+     id
+     name
+   }
   }
 }
 `;

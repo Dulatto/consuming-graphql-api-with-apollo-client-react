@@ -1,21 +1,39 @@
 import * as React from "react";
 import "./style-sessions.css";
+import { useParams} from "react-router-dom"
 import{gql, useQuery} from "@apollo/client";
+
+const SPEAKER_ATTRIBUTES = gql`
+  fragment SpeakerInfo on Speaker{
+    id
+    name
+    bio
+    sessions{
+      id 
+      title
+    }
+  }
+`;
 
 /* ---> Define queries, mutations and fragments here */
 const SPEAKERS = gql`
 query speakers {
   speakers{ 
-   id
-   name
-   bio
-   sessions{
-     id 
-     title
-   }
+   ...SpeakerInfo
   }
 }
+${SPEAKER_ATTRIBUTES}
 `;
+
+const SPEAKER_BY_ID = gql`
+query speakerById($id: ID!) {
+  speakerById(id: $id){ 
+   ...SpeakerInfo
+  }
+}
+${SPEAKER_ATTRIBUTES}
+`;
+
 
 const SpeakerList = () => {
 
@@ -77,6 +95,18 @@ const SpeakerList = () => {
 const SpeakerDetails = () => {
 
     /* ---> Replace hardcoded speaker values with data that you get back from GraphQL server here */
+const {speaker_id} = useParams();
+
+const {loading, error, data} = useQuery(SPEAKER_BY_ID, {
+  variables: {id: speaker_id},
+});
+
+if (loading) return <p>Loading speakers...</p>;
+if(error) return <p>Error loading speakers</p>;
+
+const speaker = data.speakerById;
+const {id, name, bio, sessions} = speaker;
+
   return (
     <div key={'id'} className="col-xs-12" style={{ padding: 5 }}>
       <div className="panel panel-default">

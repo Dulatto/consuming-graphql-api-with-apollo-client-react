@@ -55,7 +55,7 @@ function AllSessionList() {
 // }
 
 function SessionItem({ session}) {
- const {id, title, day, room, level} = session;
+ const {id, title, day, room, level, speakers} = session;
   /* ---> Replace hard coded session values with data that you get back from GraphQL server here */
   return (
     <div key={id} className="col-xs-12 col-sm-6" style={{ padding: 5 }}>
@@ -70,6 +70,13 @@ function SessionItem({ session}) {
           <h5>{`Starts at: ${level}`}</h5>
         </div>
         <div className="panel-footer">
+          {speakers.map(({id, name}) => (
+            <span key={id} style={{padding: 2}}>
+              <Link className="btn btn-default btn-lg" to={`/conference/speaker/${id}`}>
+                View {name}'s Profile
+              </Link>
+            </span>
+          ))}
         </div>
       </div>
     </div>

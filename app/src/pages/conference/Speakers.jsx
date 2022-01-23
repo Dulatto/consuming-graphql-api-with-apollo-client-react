@@ -108,18 +108,20 @@ const speaker = data.speakerById;
 const {id, name, bio, sessions} = speaker;
 
   return (
-    <div key={'id'} className="col-xs-12" style={{ padding: 5 }}>
+    <div key={id} className="col-xs-12" style={{ padding: 5 }}>
       <div className="panel panel-default">
         <div className="panel-heading">
-          <h3 className="panel-title">{'name'}</h3>
+          <h3 className="panel-title">{name}</h3>
         </div>
         <div className="panel-body">
-          <h5>{'bio'}</h5>
+          <h5>{bio}</h5>
         </div>
         <div className="panel-footer">
-          {{
-						/* ---> Loop through speaker's sessions here */
-					}}
+          {sessions.map(({id, title}) =>(
+            <span key={id} style={{padding: 5}}>
+              "{title}"
+            </span>
+          ))}
         </div>
       </div>
     </div>

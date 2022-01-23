@@ -4,26 +4,40 @@ import { Link } from "react-router-dom"
 import { Formik, Field, Form } from "formik"
 import {gql, useQuery} from "@apollo/client";
 
+const SESSIONS_ATTRIBUTES = gql`
+  fragment SessionInfo on Session{
+    id
+    title
+    startsAt
+    day
+    room
+    level
+    speakers{
+      id
+      name
+    }
+  }
+`;
+
 /* ---> Define queries, mutations and fragments here */
 const SESSIONS = gql`
 query sessions($day: String!) {
-  sessions(day: $day){ 
-   id
-   title
-   day
-   room
-   level
-   speakers{
-     id
-     name
-   }
+  intro: sessions(day: $day, level:"Introductory and overview"){ 
+  ...SessionInfo
   }
+  intermediate: sessions(day: $day, level:"Intermediate"){ 
+    ...SessionInfo
+   }
+   advanced: sessions(day: $day, level:"Advanced"){ 
+    ...SessionInfo
+   }
 }
+${SESSIONS_ATTRIBUTES}
 `;
 
 function SessionList ({day}) {
 
-  if(day == "") day="Wednesday"
+  if(day === "") day="Wednesday"
 
   const{loading, error,  data } = useQuery(SESSIONS, {
     variables:{day}
@@ -32,22 +46,26 @@ function SessionList ({day}) {
   if(loading) return <p>Loading Sessions...</p>
 
   if(error) return <p>Error loading sessions!</p>
+  const results =[];
+  
+  results.push(data.intro.map((session)=>(
+    <SessionItem key={session.id} session={{...session}}/>
+  )));
+  results.push(data.intermediate.map((session)=>(
+    <SessionItem key={session.id} session={{...session}}/>
+  )));
+  results.push(data.advanced.map((session)=>(
+    <SessionItem key={session.id} session={{...session}}/>
+  )));
 
-  return data.sessions.map((session)=>
-      <SessionItem
-         key={session.id}
-         session={{
-           ...session
-          }}
-          />
-  )
+ return results;
 }
 
 
-function AllSessionList() {
-   /* ---> Invoke useQuery hook here to retrieve all sessions and call SessionItem */
-   return <SessionItem />
-}
+// function AllSessionList() {
+//    /* ---> Invoke useQuery hook here to retrieve all sessions and call SessionItem */
+//    return <SessionItem />
+// }
 
 // function SessionList () {
 //   /* ---> Invoke useQuery hook here to retrieve sessions per day and call SessionItem */
@@ -55,19 +73,19 @@ function AllSessionList() {
 // }
 
 function SessionItem({ session}) {
- const {id, title, day, room, level, speakers} = session;
+ const {id, title, day, room, level, speakers, startsAt} = session;
   /* ---> Replace hard coded session values with data that you get back from GraphQL server here */
   return (
     <div key={id} className="col-xs-12 col-sm-6" style={{ padding: 5 }}>
       <div className="panel panel-default">
         <div className="panel-heading">
           <h3 className="panel-title">{title}</h3>
-          <h5>{`Level: `}</h5>
+          <h5>{`Level:${level} `}</h5>
         </div>
         <div className="panel-body">
           <h5>{`Day: ${day}`}</h5>
           <h5>{`Room Number: ${room}`}</h5>
-          <h5>{`Starts at: ${level}`}</h5>
+          <h5>{`Starts at: ${startsAt}`}</h5>
         </div>
         <div className="panel-footer">
           {speakers.map(({id, name}) => (
@@ -99,9 +117,9 @@ export function Sessions() {
             </Link>	
           </div>
           <div className="row">
-          <button type="button" onClick={() => setDay('All')} className="btn-oval">
+          {/* <button type="button" onClick={() => setDay('All')} className="btn-oval">
               All Sessions
-            </button >
+            </button > */}
             <button type="button" onClick={() => setDay('Wednesday')} className="btn-oval">
               Wednesday
             </button>
@@ -113,7 +131,7 @@ export function Sessions() {
             </button >
           </div>
           { day !== 'All' && <SessionList day={day} />}
-          { day === 'All' && <AllSessionList /> }
+          {/* { day === 'All' && <AllSessionList /> } */}
         </div>
       </section>
     </>

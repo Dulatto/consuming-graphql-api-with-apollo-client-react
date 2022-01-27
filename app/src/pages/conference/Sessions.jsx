@@ -2,7 +2,7 @@ import React, {useState} from "react";
 import "./style-sessions.css";
 import { Link } from "react-router-dom"
 import { Formik, Field, Form } from "formik"
-import {gql, useQuery} from "@apollo/client";
+import {gql, useQuery, useMutation} from "@apollo/client";
 
 const SESSIONS_ATTRIBUTES = gql`
   fragment SessionInfo on Session{
@@ -18,6 +18,15 @@ const SESSIONS_ATTRIBUTES = gql`
       name
     }
   }
+`;
+
+const CREATE_SESSION = gql`
+   mutation createSession($session: SessionInput!){
+     createSession(session: $session) {
+      id 
+      title
+     }
+   }
 `;
 
 /* ---> Define queries, mutations and fragments here */
@@ -144,6 +153,7 @@ export function Sessions() {
 export function SessionForm() {	
 
   /* ---> Call useMutation hook here to create new session and update cache */
+  const [create, data] = useMutation(CREATE_SESSION)
 
   return (	
     <div	
@@ -162,8 +172,8 @@ export function SessionForm() {
           day: "",	
           level: "",	
         }}	
-        onSubmit={() => {
-          /* ---> Call useMutation mutate function here to create new session */
+        onSubmit={ async (values) => {
+          await create({ variables: {session: values}});
         }}	
       >	
         {() => (	

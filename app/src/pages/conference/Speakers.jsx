@@ -1,7 +1,7 @@
 import * as React from "react";
 import "./style-sessions.css";
 import { useParams} from "react-router-dom"
-import{gql, useQuery} from "@apollo/client";
+import{gql, useQuery, useMutation} from "@apollo/client";
 
 const SPEAKER_ATTRIBUTES = gql`
   fragment SpeakerInfo on Speaker{
@@ -13,6 +13,14 @@ const SPEAKER_ATTRIBUTES = gql`
       title
     }
     featured
+  }
+`;
+
+const FEATURED_SPEAKER = gql`
+  mutation markFeatured($speakerId: ID!, $featured: Boolean!){
+    markFeatured(speakerId: $speakerId , featured: $featured){
+      id
+    }
   }
 `;
 
@@ -39,6 +47,8 @@ ${SPEAKER_ATTRIBUTES}
 const SpeakerList = () => {
 
   const{loading, error,  data } = useQuery(SPEAKERS);
+
+  const [ markFeatured] =useMutation(FEATURED_SPEAKER);
 
   if (loading) return <p>Loading speakers...</p>;
   if(error) return <p>Error loading speakers</p>;
@@ -72,8 +82,10 @@ const SpeakerList = () => {
             <button	
               type="button"	
               className="btn btn-default btn-lg"	
-              onClick={()=> {
-                /* ---> Call useMutation's mutate function to mark speaker as featured */
+              onClick={async ()=> {
+                await markFeatured({variables:{
+                   speakerId: id, featured: true
+                }})
               }}	
               >	
                 <i	

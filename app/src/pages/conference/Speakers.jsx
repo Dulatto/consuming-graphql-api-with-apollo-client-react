@@ -12,6 +12,7 @@ const SPEAKER_ATTRIBUTES = gql`
       id 
       title
     }
+    featured
   }
 `;
 
